@@ -1,0 +1,62 @@
+version: '3.5'
+services:
+    postgres:
+        image: postgres:14.0-alpine3.14
+        container_name: Postgres
+        volumes:
+            - ./db/blog/postgres:/var/lib/postgresql/data
+        ports:
+            - '5432:5432'
+        environment:
+            POSTGRES_DB: dev
+            POSTGRES_USER: dev
+            POSTGRES_PASSWORD: dev123
+        networks:
+            - blog-network
+        restart: unless-stopped
+
+    server:
+        build: 
+            context: './app/server'
+            dockerfile: 'Dockerfile'
+        container_name: Gateway
+        environment:
+              HOST: 'localhost:8080'
+        volumes:
+            - ./app/server:/home/node/app
+        ports:
+            - '8080:8080'
+        networks:
+            - blog-network
+    
+    client:
+        build: 
+            context: './app/client'
+            dockerfile: 'Dockerfile'
+        container_name: Gateway
+        environment:
+              HOST: 'server:8080'
+        volumes:
+            - ./app/client:/home/node/app
+        ports:
+            - '8081:8081'
+        networks:
+            - blog-network
+
+    pgadmin:
+        image: dpage/pgadmin4:2021-10-06-2
+        container_name: PgAdmin
+        depends_on:
+            - postgres
+        environment:
+            PGADMIN_DEFAULT_EMAIL: dev@mail.com
+            PGADMIN_DEFAULT_PASSWORD: dev
+        ports:
+            - '9000:80'
+        networks:
+            - blog-network
+        restart: unless-stopped
+
+networks:
+    blog-network:
+        driver: bridge
