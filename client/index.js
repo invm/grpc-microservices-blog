@@ -1,19 +1,12 @@
 const blogs = require('./protos/blog_pb');
 const blogService = require('./protos/blog_grpc_pb');
-const grpc = require('grpc');
 const assert = require('assert');
-const fs = require('fs');
 require('dotenv').config('./.env');
-assert(process.env.HOST, 'Error starting up, no environment variables');
-
-let credentials = grpc.credentials.createSsl(
-	fs.readFileSync('../certs/ca.crt'),
-	fs.readFileSync('../certs/client.key'),
-	fs.readFileSync('../certs/client.crt')
-);
+assert(process.env.SERVER_HOST, 'Error starting up, no environment variables');
+const { establishConnection, credentials } = require('./connect');
 
 const callListBlogs = () => {
-	const client = new blogService.BlogServiceClient(process.env.HOST, credentials);
+	const client = new blogService.BlogServiceClient(process.env.SERVER_HOST, credentials);
 
 	const emptyBlogRequest = new blogs.ListBlogRequest();
 	const call = client.listBlog(emptyBlogRequest, () => {});
@@ -32,7 +25,14 @@ const callListBlogs = () => {
 };
 
 const main = () => {
+	establishConnection();
 	callListBlogs();
 };
 
 main();
+
+const handle = (signal) => {
+	console.log(`*^!@4=> Received event: ${signal}`);
+};
+process.on('SIGHUP', handle);
+

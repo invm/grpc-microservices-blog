@@ -1,14 +1,12 @@
 const blogs = require('./protos/blog_pb');
 const blogService = require('./protos/blog_grpc_pb');
-const grpc = require('grpc');
+const grpc = require('@grpc/grpc-js');
 const assert = require('assert');
 const fs = require('fs');
 require('dotenv').config('./.env');
-assert(process.env.HOST, 'Error starting up, no environment variables');
-
-//Knex requires
-const config = require('./knexfile')[process.env.NODE_ENV];
-const knex = require('knex')(config);
+assert(process.env.SERVER_HOST, 'Error starting up, no environment variables');
+const establishConnection = require('./db');
+const db = establishConnection();
 
 let credentials = grpc.ServerCredentials.createSsl(
 	fs.readFileSync('../certs/ca.crt'),
@@ -25,26 +23,35 @@ let credentials = grpc.ServerCredentials.createSsl(
    Blog CRUD 
 */
 
+const dbError = (error) => {
+	console.log('DB Error', error);
+};
+
+const handle = (signal) => {
+	console.log(`*^!@4=> Received event: ${signal}`);
+};
+
+process.on('SIGHUP', handle);
+
 const listBlog = (call, callback) => {
 	console.log('Received list blog request');
-	knex('blogs').then((data) => {
-		data.forEach((element) => {
-			const blog = new blogs.Blog();
-			blog.setId(element.id);
-			blog.setAuthor(element.author);
-			blog.setTitle(element.title);
-			blog.setContent(element.content);
+	db('blog')
+		.then((data) => {
+			data.forEach((element) => {
+				const blog = new blogs.Blog();
+				blog.setId(element.id);
+				blog.setAuthor(element.author);
+				blog.setTitle(element.title);
+				blog.setContent(element.content);
 
-			console.log('Blogs ', blog.toString());
+				const blogResponse = new blogs.ListBlogResponse();
+				blogResponse.setBlog(blog);
 
-			const blogResponse = new blogs.ListBlogResponse();
-			blogResponse.setBlog(blog);
-
-			//write to the stream
-			call.write(blogResponse);
-		});
-		call.end(); // we are done writing!!
-	});
+				call.write(blogResponse);
+			});
+			call.end();
+		})
+		.catch(dbError);
 };
 
 const main = () => {
@@ -55,12 +62,18 @@ const main = () => {
 			listBlog: listBlog
 		});
 
-		server.bind(process.env.HOST, credentials);
-		server.start();
+		server.bindAsync(process.env.SERVER_HOST, credentials, (error, port) => {
+			if (error) {
+				console.error(error);
+				process.exit(1);
+			}
 
-		console.log(`Server running on ${process.env.HOST}`);
-	} catch (err) {
-		console.error(err);
+			server.start();
+		});
+
+		console.log(`Server running on ${process.env.SERVER_HOST}`);
+	} catch (error) {
+		console.error(error);
 		process.exit(1);
 	}
 };

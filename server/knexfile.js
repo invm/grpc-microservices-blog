@@ -1,5 +1,5 @@
 const path = require('path');
-
+require('dotenv').config('./.env');
 const { DB_CLIENT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_PORT, DB_NAME } = process.env;
 
 module.exports = {
@@ -17,6 +17,7 @@ module.exports = {
 			max: 10
 		},
 		migrations: {
+			tableName: 'migrations',
 			directory: path.join(__dirname, 'db', 'migrations')
 		},
 		seeds: {

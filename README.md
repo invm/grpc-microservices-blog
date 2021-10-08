@@ -1,17 +1,29 @@
-# GRPC Blog
+# Nodejs gRPC microservices
+
+A simple implementation of grpc with nodejs and psql, distributed into different client and server services, with ssl certs generation script.
 
 ## Prerequisites
 
-Download ```protoc``` binary from for your OS
+- docker
+- docker-compose
+- openssl (optional,needed in order to work with ssl certificates, otherwise possible with insecure credentials)
+
+Create protos files run from server folder
+
 ```
-https://github.com/protocolbuffers/protobuf/releases
+npx grpc_tools_node_protoc \              
+    --js_out=import_style=commonjs,binary:./protos \
+    --grpc_out=grpc_js:./protos \
+    --plugin=protoc-gen-grpc="`npm bin`/grpc_tools_node_protoc_plugin" \
+    --proto_path=../protos \
+    ../protos/<protoName>.prot
 ```
 
-To create protos files run from root folder
+### How to run
 
-```
-protoc -I=. ./protos/<protoName>.proto --js_out=import_style=commonjs,binary:./<serverFolder> --grpc_out=./<serverFolder> --plugin=protoc-gen-grpc=./<serverFolder>/node_modules/.bin/grpc_tools_node_protoc_plugin
-```
+Copy output files from previous command to client service
+
+Create .env file in root folder from the .env.example
 
 Create certificates
 ```
@@ -20,7 +32,7 @@ chmod u+x ./scripts/gen_certs.sh
 ./scripts/gen_certs.sh
 ```
 
-To create knex migrations
+Simply run
 ```
-./server/node_modules/.bin/knex migrations:make <name>
+docker-compose up 
 ```

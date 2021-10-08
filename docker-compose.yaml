@@ -1,56 +1,80 @@
-version: '3.5'
+version: '3.8'
 services:
     postgres:
         image: postgres:14.0-alpine3.14
         container_name: Postgres
         volumes:
             - ./db/blog/postgres:/var/lib/postgresql/data
-        ports:
-            - '5432:5432'
         environment:
-            POSTGRES_DB: dev
-            POSTGRES_USER: dev
-            POSTGRES_PASSWORD: dev123
+            PGUSER: ${PGUSER}
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
         networks:
             - blog-network
         restart: unless-stopped
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}']
+            interval: 2s
+            timeout: 5s
+            retries: 5
 
     server:
-        build: 
-            context: './app/server'
+        build:
+            context: './server'
             dockerfile: 'Dockerfile'
-        container_name: Gateway
+        container_name: Server
         environment:
-              HOST: 'localhost:8080'
+            NODE_ENV: ${NODE_ENV}
+            SERVER_HOST: ${SERVER_HOST}:${SERVER_PORT}
+            DB_CLIENT: ${DB_CLIENT}
+            DB_HOST: ${DB_HOST}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_PORT: ${DB_PORT}
+            DB_NAME: ${DB_NAME}
         volumes:
-            - ./app/server:/home/node/app
-        ports:
-            - '8080:8080'
+            - ./server/:/usr/src/app/
+            - ./certs:/usr/src/certs
+            - /usr/src/app/node_modules
         networks:
             - blog-network
-    
+        depends_on:
+            postgres:
+                condition: 'service_healthy'
+        healthcheck:
+            test: ['CMD-SHELL', 'node', './healthcheck.js']
+            interval: 2s
+            timeout: 5s
+            retries: 5
+
     client:
-        build: 
-            context: './app/client'
+        build:
+            context: './client'
             dockerfile: 'Dockerfile'
-        container_name: Gateway
+        container_name: Client
         environment:
-              HOST: 'server:8080'
+            NODE_ENV: ${NODE_ENV}
+            SERVER_HOST: 'server:${SERVER_PORT}'
         volumes:
-            - ./app/client:/home/node/app
-        ports:
-            - '8081:8081'
+            - ./client:/usr/src/app
+            - ./certs:/usr/src/certs
+            - /usr/src/app/node_modules
         networks:
             - blog-network
+        depends_on:
+            server:
+                condition: 'service_healthy'
 
     pgadmin:
         image: dpage/pgadmin4:2021-10-06-2
         container_name: PgAdmin
         depends_on:
-            - postgres
+            postgres:
+                condition: 'service_healthy'
         environment:
-            PGADMIN_DEFAULT_EMAIL: dev@mail.com
-            PGADMIN_DEFAULT_PASSWORD: dev
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
         ports:
             - '9000:80'
         networks:
