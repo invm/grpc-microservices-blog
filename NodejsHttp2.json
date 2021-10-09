@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "31fc7b73-3225-44b4-9191-ad2baa0b9a4a",
+		"name": "Http2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Read single blog",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API}}/blog/595",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"blog",
+						"595"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read all blogs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API}}/",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create blog",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"author\": \"{{$randomFullName}}\",\n    \"title\": \"{{$randomLoremWords}}\",\n    \"content\": \"{{$randomLoremParagraph}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API}}/blog",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"blog"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update blog",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"author\": \"{{$randomFullName}}\",\n    \"title\": \"{{$randomLoremWords}}\",\n    \"content\": \"{{$randomLoremParagraph}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API}}/blog/605",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"blog",
+						"605"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete blog",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"author\": \"{{$randomFullName}}\",\n    \"title\": \"{{$randomLoremWords}}\",\n    \"content\": \"{{$randomLoremParagraph}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API}}/blog/604",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"blog",
+						"604"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "API",
+			"value": "https://localhost:8000"
+		}
+	]
+}

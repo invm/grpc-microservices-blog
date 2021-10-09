@@ -137,7 +137,7 @@ const deleteBlog = (call, callback) => {
 		.delete()
 		.returning('id')
 		.then((data) => {
-			if (data) {
+			if (data.length) {
 				const [id] = data;
 
 				const deleteBlogResponse = new blogs.DeleteBlogResponse();
