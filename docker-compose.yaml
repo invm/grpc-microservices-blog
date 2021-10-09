@@ -60,6 +60,8 @@ services:
             - ./client:/usr/src/app
             - ./certs:/usr/src/certs
             - /usr/src/app/node_modules
+        ports:
+            - "8000:8000"
         networks:
             - blog-network
         depends_on:
