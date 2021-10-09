@@ -549,7 +549,10 @@ proto.blog.UpdateBlogRequest.prototype.toObject = function(opt_includeInstance) 
  */
 proto.blog.UpdateBlogRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    blog: (f = msg.getBlog()) && proto.blog.Blog.toObject(includeInstance, f)
+    blogId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    author: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    title: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    content: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -587,9 +590,20 @@ proto.blog.UpdateBlogRequest.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.blog.Blog;
-      reader.readMessage(value,proto.blog.Blog.deserializeBinaryFromReader);
-      msg.setBlog(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBlogId(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAuthor(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTitle(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setContent(value);
       break;
     default:
       reader.skipField();
@@ -620,51 +634,106 @@ proto.blog.UpdateBlogRequest.prototype.serializeBinary = function() {
  */
 proto.blog.UpdateBlogRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getBlog();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getBlogId();
+  if (f.length > 0) {
+    writer.writeString(
       1,
-      f,
-      proto.blog.Blog.serializeBinaryToWriter
+      f
+    );
+  }
+  f = message.getAuthor();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getTitle();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getContent();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
     );
   }
 };
 
 
 /**
- * optional Blog blog = 1;
- * @return {?proto.blog.Blog}
+ * optional string blog_id = 1;
+ * @return {string}
  */
-proto.blog.UpdateBlogRequest.prototype.getBlog = function() {
-  return /** @type{?proto.blog.Blog} */ (
-    jspb.Message.getWrapperField(this, proto.blog.Blog, 1));
+proto.blog.UpdateBlogRequest.prototype.getBlogId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {?proto.blog.Blog|undefined} value
- * @return {!proto.blog.UpdateBlogRequest} returns this
-*/
-proto.blog.UpdateBlogRequest.prototype.setBlog = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {string} value
  * @return {!proto.blog.UpdateBlogRequest} returns this
  */
-proto.blog.UpdateBlogRequest.prototype.clearBlog = function() {
-  return this.setBlog(undefined);
+proto.blog.UpdateBlogRequest.prototype.setBlogId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional string author = 2;
+ * @return {string}
  */
-proto.blog.UpdateBlogRequest.prototype.hasBlog = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.blog.UpdateBlogRequest.prototype.getAuthor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.blog.UpdateBlogRequest} returns this
+ */
+proto.blog.UpdateBlogRequest.prototype.setAuthor = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string title = 3;
+ * @return {string}
+ */
+proto.blog.UpdateBlogRequest.prototype.getTitle = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.blog.UpdateBlogRequest} returns this
+ */
+proto.blog.UpdateBlogRequest.prototype.setTitle = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string content = 4;
+ * @return {string}
+ */
+proto.blog.UpdateBlogRequest.prototype.getContent = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.blog.UpdateBlogRequest} returns this
+ */
+proto.blog.UpdateBlogRequest.prototype.setContent = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

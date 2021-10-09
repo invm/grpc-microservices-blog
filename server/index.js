@@ -1,12 +1,14 @@
-const blogs = require('./protos/blog_pb');
 const blogService = require('./protos/blog_grpc_pb');
 const grpc = require('@grpc/grpc-js');
 const assert = require('assert');
 const fs = require('fs');
 require('dotenv').config('./.env');
 assert(process.env.SERVER_HOST, 'Error starting up, no environment variables');
-const establishConnection = require('./db');
-const db = establishConnection();
+const { createBlog, listBlog, readBlog, updateBlog, deleteBlog } = require('./src/blog');
+const { handleSignal } = require('./utils');
+
+// terminate on kill and other signals
+process.on('SIGHUP', handleSignal);
 
 let credentials = grpc.ServerCredentials.createSsl(
 	fs.readFileSync('../certs/ca.crt'),
@@ -19,47 +21,16 @@ let credentials = grpc.ServerCredentials.createSsl(
 	true
 );
 
-/*
-   Blog CRUD 
-*/
-
-const dbError = (error) => {
-	console.log('DB Error', error);
-};
-
-const handle = (signal) => {
-	console.log(`*^!@4=> Received event: ${signal}`);
-};
-
-process.on('SIGHUP', handle);
-
-const listBlog = (call, callback) => {
-	console.log('Received list blog request');
-	db('blog')
-		.then((data) => {
-			data.forEach((element) => {
-				const blog = new blogs.Blog();
-				blog.setId(element.id);
-				blog.setAuthor(element.author);
-				blog.setTitle(element.title);
-				blog.setContent(element.content);
-
-				const blogResponse = new blogs.ListBlogResponse();
-				blogResponse.setBlog(blog);
-
-				call.write(blogResponse);
-			});
-			call.end();
-		})
-		.catch(dbError);
-};
-
 const main = () => {
 	try {
 		const server = new grpc.Server();
 
 		server.addService(blogService.BlogServiceService, {
-			listBlog: listBlog
+			listBlog: listBlog,
+			createBlog: createBlog,
+			readBlog: readBlog,
+			updateBlog: updateBlog,
+			deleteBlog: deleteBlog
 		});
 
 		server.bindAsync(process.env.SERVER_HOST, credentials, (error, port) => {

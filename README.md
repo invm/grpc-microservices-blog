@@ -4,19 +4,20 @@ A simple implementation of grpc with nodejs and psql, distributed into different
 
 ## Prerequisites
 
+- node (in order to create protos files)
 - docker
 - docker-compose
 - openssl (optional,needed in order to work with ssl certificates, otherwise possible with insecure credentials)
 
-Create protos files run from server folder
+Create protos files run from server folder (needs ```npm i ``` first)
 
 ```
-npx grpc_tools_node_protoc \              
+./node_modules/.bin/grpc_tools_node_protoc \
     --js_out=import_style=commonjs,binary:./protos \
     --grpc_out=grpc_js:./protos \
-    --plugin=protoc-gen-grpc="`npm bin`/grpc_tools_node_protoc_plugin" \
-    --proto_path=../protos \
-    ../protos/<protoName>.prot
+    --plugin=protoc-gen-grpc=./node_modules/.bin/grpc_tools_node_protoc_plugin \
+    -I ../protos \
+    ../protos/*.proto
 ```
 
 ### How to run
