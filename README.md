@@ -13,11 +13,11 @@ Create protos files run from server folder (needs ```npm i ``` first)
 
 ```
 ./node_modules/.bin/grpc_tools_node_protoc \
-  --js_out=import_style=commonjs,binary:./protos \          
-  --grpc_out=grpc_js:./protos \                      
-  --plugin=protoc-gen-grpc=./node_modules/.bin/grpc_tools_node_protoc_plugin \    
-  -I ../protos \                                                                  
-  ../protos/*.proto
+    --js_out=import_style=commonjs,binary:./protos \
+    --grpc_out=grpc_js:./protos \
+    --plugin=protoc-gen-grpc=./node_modules/.bin/grpc_tools_node_protoc_plugin \
+    -I ../protos \
+    ../protos/*.proto
 ```
 
 ### How to run

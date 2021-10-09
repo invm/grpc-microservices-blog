@@ -102,7 +102,7 @@ const updateBlog = (call, callback) => {
 			title: call.request.getTitle(),
 			content: call.request.getContent()
 		})
-		.returning(['id','author','title','content'])
+		.returning(['id', 'author', 'title', 'content'])
 		.then((data) => {
 			if (data.length) {
 				const { id, author, title, content } = data[0];
@@ -128,9 +128,37 @@ const updateBlog = (call, callback) => {
 		.catch(dbError);
 };
 
+const deleteBlog = (call, callback) => {
+	console.log('Received delete blog call');
+	const blog_id = call.request.getBlogId();
+
+	db('blog')
+		.where({ id: +blog_id })
+		.delete()
+		.returning('id')
+		.then((data) => {
+			if (data) {
+				const [id] = data;
+
+				const deleteBlogResponse = new blogs.DeleteBlogResponse();
+
+				deleteBlogResponse.setBlogId(`${id}`);
+
+				callback(null, deleteBlogResponse);
+			} else {
+				return callback({
+					code: grpc.status.NOT_FOUND,
+					message: 'Blog not found'
+				});
+			}
+		})
+		.catch(dbError);
+};
+
 module.exports = {
 	createBlog,
 	listBlog,
 	readBlog,
-	updateBlog
+	updateBlog,
+	deleteBlog
 };
