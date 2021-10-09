@@ -1,8 +1,8 @@
-# Nodejs gRPC microservices
+# **Nodejs gRPC microservices**
 
 A simple implementation of grpc with nodejs and psql, distributed into different client and server services, with ssl certs generation script.
 
-## Prerequisites
+## **Prerequisites**
 
 - node (in order to create protos files)
 - docker
@@ -20,7 +20,7 @@ Create protos files run from server folder (needs ```npm i ``` first)
     ../protos/*.proto
 ```
 
-### How to run
+### **How to run**
 
 Copy output files from previous command to client service
 
@@ -37,3 +37,13 @@ Simply run
 ```
 docker-compose up 
 ```
+
+### How to access public facing API?
+
+Load the ```NodejsHttp2.json``` file into postman and hit those request.
+
+### **Evans CLI** 
+
+This tool allow to communite with the server from the cli after envoking on a specific proto file, it allows to see services, methods and call them.
+
+[Download](https://github.com/ktr0731/evans)
