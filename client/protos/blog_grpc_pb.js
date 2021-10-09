@@ -174,4 +174,3 @@ var BlogServiceService = exports.BlogServiceService = {
 };
 
 exports.BlogServiceClient = grpc.makeGenericClientConstructor(BlogServiceService);
-// All our API's

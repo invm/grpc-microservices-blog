@@ -1,6 +1,6 @@
 const faker = require('faker');
 
-let data = Array(1)
+let data = Array(10)
 	.fill('')
 	.map((_) => ({
 		author: `${faker.name.firstName()} ${faker.name.lastName()}`,

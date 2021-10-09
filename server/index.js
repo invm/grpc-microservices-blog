@@ -33,13 +33,13 @@ const handle = (signal) => {
 
 process.on('SIGHUP', handle);
 
-const listBlog = (call, callback) => {
-	console.log('Received list blog request');
+const listBlog = (call) => {
+	console.log('Received list blog call');
 	db('blog')
 		.then((data) => {
 			data.forEach((element) => {
 				const blog = new blogs.Blog();
-				blog.setId(element.id);
+				blog.setId(`${element.id}`);
 				blog.setAuthor(element.author);
 				blog.setTitle(element.title);
 				blog.setContent(element.content);
@@ -47,9 +47,39 @@ const listBlog = (call, callback) => {
 				const blogResponse = new blogs.ListBlogResponse();
 				blogResponse.setBlog(blog);
 
+				// streaming back all data one entry at a time
 				call.write(blogResponse);
 			});
 			call.end();
+		})
+		.catch(dbError);
+};
+
+const createBlog = (call, callback) => {
+	console.log('Received create blog call');
+
+	const blog = call.request.getBlog();
+
+	db('blog')
+		.insert({
+			author: blog.getAuthor(),
+			title: blog.getTitle(),
+			content: blog.getContent()
+		})
+		.returning(['id', 'author', 'title', 'content'])
+		.then(([{ id, author, title, content }]) => {
+			const addedBlog = new blogs.Blog();
+
+			addedBlog.setId(`${id}`);
+			addedBlog.setAuthor(author);
+			addedBlog.setTitle(title);
+			addedBlog.setContent(content);
+
+			const blogResponse = new blogs.CreateBlogResponse();
+
+			blogResponse.setBlog(addedBlog);
+
+			callback(null, blogResponse);
 		})
 		.catch(dbError);
 };
@@ -59,7 +89,8 @@ const main = () => {
 		const server = new grpc.Server();
 
 		server.addService(blogService.BlogServiceService, {
-			listBlog: listBlog
+			listBlog: listBlog,
+			createBlog: createBlog
 		});
 
 		server.bindAsync(process.env.SERVER_HOST, credentials, (error, port) => {
