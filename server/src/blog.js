@@ -91,8 +91,46 @@ const readBlog = (call, callback) => {
 		.catch(dbError);
 };
 
+const updateBlog = (call, callback) => {
+	console.log('Received update blog call');
+	const blog_id = call.request.getBlogId();
+
+	db('blog')
+		.where({ id: +blog_id })
+		.update({
+			author: call.request.getAuthor(),
+			title: call.request.getTitle(),
+			content: call.request.getContent()
+		})
+		.returning(['id','author','title','content'])
+		.then((data) => {
+			if (data.length) {
+				const { id, author, title, content } = data[0];
+				const blog = new blogs.Blog();
+
+				blog.setId(`${id}`);
+				blog.setAuthor(author);
+				blog.setTitle(title);
+				blog.setContent(content);
+
+				const updateBlogResponse = new blogs.UpdateBlogResponse();
+
+				updateBlogResponse.setBlog(blog);
+
+				callback(null, updateBlogResponse);
+			} else {
+				return callback({
+					code: grpc.status.NOT_FOUND,
+					message: 'Blog not found'
+				});
+			}
+		})
+		.catch(dbError);
+};
+
 module.exports = {
 	createBlog,
 	listBlog,
-  readBlog
+	readBlog,
+	updateBlog
 };

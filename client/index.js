@@ -68,11 +68,36 @@ const callReadBlog = () => {
 	});
 };
 
+const callUpdateBlog = () => {
+	const client = new blogService.BlogServiceClient(process.env.SERVER_HOST, credentials);
+
+	const blog_id = 490;
+
+	const updateBlogRequest = new blogs.UpdateBlogRequest();
+	updateBlogRequest.setBlogId(`${blog_id}`);
+	updateBlogRequest.setAuthor(`${faker.name.firstName()} ${faker.name.lastName()}`);
+	updateBlogRequest.setTitle(`${faker.lorem.words(5)}`);
+	updateBlogRequest.setContent(`${faker.lorem.paragraph()}`);
+
+	client.updateBlog(updateBlogRequest, (error, response) => {
+		if (!error) {
+			console.log('Received update blog response', response.toString());
+		} else {
+			if (error.code === grpc.status.NOT_FOUND) {
+				console.log('Blog not found');
+			} else {
+				console.log('Error updating blog', error);
+			}
+		}
+	});
+};
+
 const main = () => {
 	establishConnection();
 	// callListBlogs();
 	// callCreateBlog();
-	callReadBlog();
+	// callReadBlog();
+	callUpdateBlog();
 };
 
 main();

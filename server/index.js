@@ -4,7 +4,7 @@ const assert = require('assert');
 const fs = require('fs');
 require('dotenv').config('./.env');
 assert(process.env.SERVER_HOST, 'Error starting up, no environment variables');
-const { createBlog, listBlog, readBlog } = require('./src/blog');
+const { createBlog, listBlog, readBlog, updateBlog } = require('./src/blog');
 const { handleSignal } = require('./utils');
 
 // terminate on kill and other signals
@@ -28,7 +28,8 @@ const main = () => {
 		server.addService(blogService.BlogServiceService, {
 			listBlog: listBlog,
 			createBlog: createBlog,
-			readBlog: readBlog
+			readBlog: readBlog,
+      updateBlog: updateBlog,
 		});
 
 		server.bindAsync(process.env.SERVER_HOST, credentials, (error, port) => {

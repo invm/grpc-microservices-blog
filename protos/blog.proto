@@ -7,6 +7,18 @@ service BlogService {
     rpc ListBlog (ListBlogRequest) returns (stream ListBlogResponse) {};
     rpc CreateBlog (CreateBlogRequest) returns (CreateBlogResponse) {};
     rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse) {};
+    rpc UpdateBlog (UpdateBlogRequest) returns (UpdateBlogResponse) {};
+}
+
+message UpdateBlogRequest {
+  string blog_id = 1;
+  string author = 2;
+  string title = 3;
+  string content = 4;
+}
+
+message UpdateBlogResponse {
+  Blog blog = 1;
 }
 
 message ReadBlogRequest {
