@@ -2,6 +2,7 @@ const blogs = require('./protos/blog_pb');
 const blogService = require('./protos/blog_grpc_pb');
 const assert = require('assert');
 const faker = require('faker');
+const grpc = require('@grpc/grpc-js');
 require('dotenv').config('./.env');
 assert(process.env.SERVER_HOST, 'Error starting up, no environment variables');
 const { establishConnection, credentials } = require('./connect');
@@ -46,10 +47,32 @@ const callCreateBlog = () => {
 	});
 };
 
+const callReadBlog = () => {
+	const client = new blogService.BlogServiceClient(process.env.SERVER_HOST, credentials);
+
+	const blog_id = 480;
+
+	const readBlogRequest = new blogs.ReadBlogRequest();
+	readBlogRequest.setBlogId(`${blog_id}`);
+
+	client.readBlog(readBlogRequest, (error, response) => {
+		if (!error) {
+			console.log('Received read blog response', response.toString());
+		} else {
+			if (error.code === grpc.status.NOT_FOUND) {
+				console.log('Blog not found');
+			} else {
+				console.log('Error reading blog', error);
+			}
+		}
+	});
+};
+
 const main = () => {
 	establishConnection();
 	// callListBlogs();
-	callCreateBlog();
+	// callCreateBlog();
+	callReadBlog();
 };
 
 main();
