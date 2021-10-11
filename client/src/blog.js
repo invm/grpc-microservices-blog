@@ -1,6 +1,5 @@
 const blogs = require('../protos/blog_pb');
 const blogService = require('../protos/blog_grpc_pb');
-const faker = require('faker');
 const grpc = require('@grpc/grpc-js');
 const { credentials } = require('../connect');
 
@@ -96,7 +95,7 @@ const callReadBlog = (req, res) => {
 				content: response.array[0][3]
 			};
 		} else {
-			status = 400;
+			status = 400; 
 			success = false;
 			if (_error.code === grpc.status.NOT_FOUND) {
 				error = 'Blog not found';
