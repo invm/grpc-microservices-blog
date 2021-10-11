@@ -40,6 +40,11 @@ docker-compose up
 
 ### How to access public facing API?
 
+Create certs in client folder
+```
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout public.key -out public.crt
+```
+
 Load the ```NodejsHttp2.json``` file into postman and hit those request.
 
 ### **Evans CLI** 
